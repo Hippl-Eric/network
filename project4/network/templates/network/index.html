@@ -1,5 +1,16 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+
+    <h1>Posts</h1>
+    <div id="new-post" class="post-box border border-success rounded">
+        <h3>New Post</h3>
+        <form method="POST" action="">
+            {% csrf_token %}
+            <div class="form-group">
+                <textarea class="form-control" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Post</button>
+        </form>
+    </div>
 {% endblock %}
