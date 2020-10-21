@@ -2,15 +2,27 @@
 
 {% block body %}
 
+    {% if user.is_authenticated %}
+        <div id="new-post" class="post-box border border-success rounded">
+            <h3>New Post</h3>
+            <form method="POST" action="{% url 'index' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <textarea name="content" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Post</button>
+            </form>
+        </div>
+    {% endif %}
     <h1>Posts</h1>
-    <div id="new-post" class="post-box border border-success rounded">
-        <h3>New Post</h3>
-        <form method="POST" action="">
-            {% csrf_token %}
-            <div class="form-group">
-                <textarea class="form-control" rows="3"></textarea>
+    <div>
+        {% for post in all_posts %}
+            <div class="post-box border border-success rounded">
+                <div>{{ post.user.username }}</div>
+                <div>{{ post.content }}</div>
+                <div>{{ post.timestamp }}</div>
+                <div>{{ post.likes }}</div>
             </div>
-            <button type="submit" class="btn btn-primary">Post</button>
-        </form>
+        {% endfor %}
     </div>
 {% endblock %}

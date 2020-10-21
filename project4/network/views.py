@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
+from django.db.models import F
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -8,7 +9,25 @@ from .models import User, Post
 
 
 def index(request):
-    return render(request, "network/index.html")
+
+    # New post
+    if request.method == "POST":
+
+        # Grab form submission
+        content = request.POST.get("content")
+        # TODO prevent empty posts
+
+        post = Post(user=request.user, content=content)
+        post.save()
+
+        return HttpResponseRedirect(reverse("index"))
+    
+    # Return all posts page
+    else:
+        all_posts = Post.objects.all().order_by(F('timestamp').desc())
+        return render(request, "network/index.html", {
+            "all_posts": all_posts
+        })
 
 
 def login_view(request):
