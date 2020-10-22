@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Post
+from .models import User, Post, Followers
 
 
 def index(request):
@@ -80,3 +80,24 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+def profile(request, username):
+    
+    # Query username, and return profile page
+    # try:
+        user = User.objects.get(username=username)
+        posts = user.posts.all()
+        num_followers = user.followers.count()
+        num_following = user.following.count()
+        return render(request, "network/profile.html", {
+            "user_profile": user,
+            "posts": posts,
+            "num_followers": num_followers,
+            "num_following": num_following
+        })
+
+    # Invalid username
+    # except:
+    #     return render(request, "network/profile.html", {
+    #         "message": f"Whoops! Sorry, {username} was not found."
+    #     })
