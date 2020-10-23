@@ -17,12 +17,7 @@
     <h1>Posts</h1>
     <div>
         {% for post in all_posts %}
-            <div class="post-box border border-success rounded">
-                <div>{{ post.user.username }}</div>
-                <div>{{ post.content }}</div>
-                <div>{{ post.timestamp }}</div>
-                <div>{{ post.likes }}</div>
-            </div>
+            {% include "network/post-block.html" %}
         {% endfor %}
     </div>
 {% endblock %}

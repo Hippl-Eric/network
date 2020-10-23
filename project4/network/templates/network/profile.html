@@ -12,12 +12,7 @@
             <div>Following: {{ num_following }}</div>
             <div>
                 {% for post in posts %}
-                    <div class="post-box border border-success rounded">
-                        <div>{{ post.user.username }}</div>
-                        <div>{{ post.content }}</div>
-                        <div>{{ post.timestamp }}</div>
-                        <div>{{ post.likes }}</div>
-                    </div>
+                    {% include "network/post-block.html" %}
                 {% endfor %}
             </div>
         </div>
