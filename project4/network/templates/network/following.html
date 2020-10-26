@@ -1,0 +1,16 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <h1>Following</h1>
+
+    {% if posts %}
+        <div>
+            {% for post in posts %}
+                {% include "network/post-block.html" %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You are not following anyone yet!</p>
+    {% endif %}
+    
+{% endblock %}

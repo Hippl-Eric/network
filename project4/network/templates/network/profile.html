@@ -10,6 +10,13 @@
         <div>
             <div>Followers: {{ num_followers }}</div>
             <div>Following: {{ num_following }}</div>
+            {% if  user.username != user_profile.username %}
+                {% if user.id in follower_list %}
+                    <button>Unfollow</button>
+                {% else %}
+                    <button>Follow</button>
+                {% endif %}
+            {% endif %}
             <div>
                 {% for post in posts %}
                     {% include "network/post-block.html" %}

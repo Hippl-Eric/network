@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.db.models import F
 from django.http import HttpResponse, HttpResponseRedirect
@@ -84,20 +85,40 @@ def register(request):
 def profile(request, username):
     
     # Query username, and return profile page
-    # try:
+    try:
+        # Query username
         user = User.objects.get(username=username)
-        posts = user.posts.all()
+
+        # Grab user's posts, qty of followers, qty following, & list of followers
+        posts = user.posts.all().order_by(F('timestamp').desc())
         num_followers = user.followers.count()
         num_following = user.following.count()
+        follower_list = user.followers.values_list("follower_id", flat=True)
+
+        # Return profile page
         return render(request, "network/profile.html", {
             "user_profile": user,
             "posts": posts,
             "num_followers": num_followers,
-            "num_following": num_following
+            "num_following": num_following,
+            "follower_list": follower_list
         })
 
     # Invalid username
-    # except:
-    #     return render(request, "network/profile.html", {
-    #         "message": f"Whoops! Sorry, {username} was not found."
-    #     })
+    except:
+        return render(request, "network/profile.html", {
+            "message": f"Whoops! Sorry, {username} was not found."
+        })
+
+@login_required(login_url='login')
+def following_posts(request):
+
+    # Create list of following ids
+    following_list = request.user.following.values_list("following_id", flat=True)
+
+    # Get all follower posts
+    following_posts = Post.objects.filter(user__in=following_list).order_by(F('timestamp').desc())
+
+    return render(request, "network/following.html", {
+        "posts": following_posts
+    })
