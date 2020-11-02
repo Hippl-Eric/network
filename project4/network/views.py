@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.db.models import F
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -84,31 +84,61 @@ def register(request):
 
 def profile(request, username):
     
-    # Query username, and return profile page
+    # Query username
     try:
-        # Query username
         user = User.objects.get(username=username)
+        if request.user.is_authenticated:
+            test = request.user
+    
+    # Invalid username
+    except User.DoesNotExist:
+        return render(request, "network/profile.html", {
+            "message": f"Whoops! Sorry, {username} was not found."
+        })
+
+    # Return profile page
+    if request.method == "GET":
 
         # Grab user's posts, qty of followers, qty following, & list of followers
         posts = user.posts.all().order_by(F('timestamp').desc())
         num_followers = user.followers.count()
         num_following = user.following.count()
-        follower_list = user.followers.values_list("follower_id", flat=True)
+        is_following = user.followers.filter(follower_id=request.user.id).exists()
 
-        # Return profile page
+        # Return
         return render(request, "network/profile.html", {
             "user_profile": user,
             "posts": posts,
             "num_followers": num_followers,
             "num_following": num_following,
-            "follower_list": follower_list
+            "is_following": is_following
         })
+        
+    # Toggle following
+    elif request.method == "PUT":
 
-    # Invalid username
-    except:
-        return render(request, "network/profile.html", {
-            "message": f"Whoops! Sorry, {username} was not found."
-        })
+        # User is already following, change to un-following
+        try:
+            user_following = Followers.objects.get(follower=request.user, following=user)
+            user_following.delete()
+            following = False
+
+        # User is not following, change to following
+        except Followers.DoesNotExist:
+            create_follower = Followers(follower=request.user, following=user)
+            create_follower.save()
+            following = True
+
+        return JsonResponse ({
+            "following": following
+        }, status=201)
+
+    # Invalid request
+    else:
+        return JsonResponse ({
+            "error": "GET or PUT request required."
+        }, status=400)
+
 
 @login_required(login_url='login')
 def following_posts(request):

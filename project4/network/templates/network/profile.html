@@ -8,14 +8,17 @@
     {% else %}
         <h1>{{ user_profile.username }}</h1>
         <div>
-            <div>Followers: {{ num_followers }}</div>
+            <div>Followers: <span id="num-followers">{{ num_followers }}</span></div>
             <div>Following: {{ num_following }}</div>
-            {% if  user.username != user_profile.username %}
-                {% if user.id in follower_list %}
-                    <button>Unfollow</button>
+            {% if user.username != user_profile.username %}
+            <form id="follow-form" method="POST">
+                {% csrf_token %}
+                {% if is_following %}
+                    <input type="submit" id="follow-btn" data-user-id="{{ user_profile.id }}" class="btn btn-primary" value="Unfollow">
                 {% else %}
-                    <button>Follow</button>
+                    <input type="submit" id="follow-btn" data-user-id="{{ user_profile.id }}" class="btn btn-primary" value="Follow">
                 {% endif %}
+            </form>
             {% endif %}
             <div>
                 {% for post in posts %}
