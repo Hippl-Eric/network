@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -87,8 +88,6 @@ def profile(request, username):
     # Query username
     try:
         user = User.objects.get(username=username)
-        if request.user.is_authenticated:
-            test = request.user
     
     # Invalid username
     except User.DoesNotExist:
@@ -115,6 +114,7 @@ def profile(request, username):
         })
         
     # Toggle following
+    # TODO login required
     elif request.method == "PUT":
 
         # User is already following, change to un-following
@@ -152,3 +152,38 @@ def following_posts(request):
     return render(request, "network/following.html", {
         "posts": following_posts
     })
+
+@login_required(login_url='login')
+def edit_post(request, post_id):
+
+    if request.method == "PUT":
+        data = json.loads(request.body)
+        post_user_id = data["userID"]
+
+        # Ensure post and user exist
+        try:
+            post = Post.objects.get(pk=post_id)
+            post_user = User.objects.get(pk=post_user_id)
+        except Post.DoesNotExist:
+            return JsonResponse({
+                "error": "Invalid request"
+            }, status=400)
+
+        # Ensure active user matches the post_user and the post.user
+        if request.user.id != post_user.id or request.user.id != post.user.id:
+            return JsonResponse({
+                "error": "Invalid request"
+            }, status=400)
+        
+        # Update the post content
+        else:
+            post.content = data["postContent"]
+            post.save(update_fields=['content'])
+            return JsonResponse({
+                "message": "Post updated"
+            }, status=201)
+
+    else:
+        return JsonResponse({
+            "error": "PUT request required."
+        }, status=400)
