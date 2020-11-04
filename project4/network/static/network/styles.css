@@ -30,3 +30,7 @@
     color: crimson;
     cursor: pointer;
 }
+
+#profile-info {
+    margin-bottom: 1em;
+}
