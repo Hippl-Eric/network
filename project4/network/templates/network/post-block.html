@@ -1,9 +1,25 @@
-<div class="post-box border border-success rounded" data-post-id="{{ post.id }}" data-user-id="{{ post.user.id }}">
-    <div class="username"><a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></div>
+<div class="post-box border border-dark rounded" data-post-id="{{ post.id }}" data-user-id="{{ post.user.id }}">
+    <div class="username"><strong><a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></strong></div>
     <div class="content">{{ post.content }}</div>
     <div class="timestamp">{{ post.timestamp }}</div>
-    <div class="likes">{{ post.likes }}</div>
+    <div class="like-box d-flex flex-row">
+
+        <div class="like-count">{{ post.likes.count }}</div>
+        <div class="like-icon">
+            {% if not post.likes.exists %}
+                <i class="fas fa-heart" onclick="likePost(this)"></i>
+            {% else %}
+                {% for like in post.likes.all %}
+                    {% if like.user.id == user.id %}
+                        <i class="far fa-heart" onclick="unlikePost(this)"></i>
+                    {% else %}
+                        <i class="fas fa-heart" onclick="likePost(this)"></i>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
     {% if user.username == post.user.username %}
-        <button type="button" class="edit-btn btn btn-primary btn-sm" onclick="editPost(this)">Edit</button>
+        <button type="button" class="edit-btn btn btn btn-link btn-sm" onclick="editPost(this)">Edit</button>
     {% endif %}
 </div>

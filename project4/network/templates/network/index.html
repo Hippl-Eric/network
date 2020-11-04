@@ -3,7 +3,7 @@
 {% block body %}
 
     {% if user.is_authenticated %}
-        <div id="new-post" class="post-box border border-success rounded">
+        <div id="new-post" class="post-box border border-primary rounded">
             <h3>New Post</h3>
             <form method="POST" action="{% url 'index' %}">
                 {% csrf_token %}

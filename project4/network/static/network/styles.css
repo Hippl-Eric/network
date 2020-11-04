@@ -1,3 +1,32 @@
 .post-box {
     padding: 1em;
+    position: relative;
+    margin-bottom: .5em;
+}
+
+.post-box .username a {
+    color: black;
+}
+
+.post-box .content {
+    white-space: pre-wrap;
+}
+
+.post-box .timestamp {
+    color: gray;
+}
+
+.post-box .edit-btn, .post-box .save-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.post-box .like-box .like-count {
+    padding-right: .5em;
+}
+
+.fa-heart {
+    color: crimson;
+    cursor: pointer;
 }

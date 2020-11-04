@@ -133,7 +133,7 @@ function createPostBtn(btnType) {
     let newElmnt = null;
     if (btnType == "edit" || btnType == "save") {
         newElmnt = document.createElement("button");
-        newElmnt.classList.add(`${btnType}-btn`, "btn", "btn-primary", "btn-sm");
+        newElmnt.classList.add(`${btnType}-btn`, "btn", "btn-link", "btn-sm");
         newElmnt.setAttribute("type", "button");
         newElmnt.setAttribute("onclick", `${btnType}Post(this)`);
 
