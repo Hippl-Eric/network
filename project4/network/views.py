@@ -2,7 +2,6 @@ import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.db.models import F
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -26,7 +25,7 @@ def index(request):
     
     # Return all posts page
     else:
-        all_posts = Post.objects.all().order_by(F('timestamp').desc())
+        all_posts = Post.objects.all()
         return render(request, "network/index.html", {
             "all_posts": all_posts
         })
@@ -99,7 +98,7 @@ def profile(request, username):
     if request.method == "GET":
 
         # Grab user's posts, qty of followers, qty following, & list of followers
-        posts = user.posts.all().order_by(F('timestamp').desc())
+        posts = user.posts.all()
         num_followers = user.followers.count()
         num_following = user.following.count()
         is_following = user.followers.filter(follower_id=request.user.id).exists()
@@ -147,7 +146,7 @@ def following_posts(request):
     following_list = request.user.following.values_list("following_id", flat=True)
 
     # Get all follower posts
-    following_posts = Post.objects.filter(user__in=following_list).order_by(F('timestamp').desc())
+    following_posts = Post.objects.filter(user__in=following_list)
 
     return render(request, "network/following.html", {
         "posts": following_posts
