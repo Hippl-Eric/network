@@ -1,12 +1,14 @@
 document.addEventListener("DOMContentLoaded", function() {
 
     console.log("Loaded!")
-    // Follow button
-    document.querySelector("#follow-form").onsubmit = function() {
-        follow();
-        return false;
-    };
 
+    // Follow button
+    if (document.querySelector("#follow-form")) {
+        document.querySelector("#follow-form").onsubmit = function() {
+            follow();
+            return false;
+        };
+    }
 });
 
 function follow() {
@@ -169,3 +171,62 @@ function createPostContent(elmntType, text) {
     };
     return newElmnt;
 }
+
+function likePost(likeBtn) {
+    console.log("clicked");
+
+    // Grab the post and like count
+    const postElmnt = likeBtn.closest(".post-box");
+    const likeCount = likeBtn.parentNode.previousElementSibling;
+    let likeCountVal = parseInt(likeCount.innerHTML);
+
+    // Grab the post data, and CSRF token
+    const postID = postElmnt.dataset.postId;
+    const userID = postElmnt.dataset.userId;
+    const csrftoken = Cookies.get('csrftoken');
+
+    // Set request object
+    const request = new Request(
+        `/edit/${postID}`,
+        {
+            method: 'PUT',
+            headers: {'X-CSRFToken': csrftoken},
+            mode: 'same-origin',
+            body: JSON.stringify({
+                userID: userID,
+                like: true
+            })
+        }
+    );
+
+    // Query DB
+    fetch(request)
+    .then(response => response.json())
+    .then(data => {
+
+        // Invalid request
+        if (data.error) {
+            alert(`Sorry: ${data.error}`);
+        }
+
+        // Post successfully updated
+        else {
+
+            // If user likes, load unlike button
+            if (data.like) {
+                likeBtn.classList.remove("fas");
+                likeBtn.classList.add("far");
+                likeCountVal++;
+                likeCount.innerHTML = likeCountVal;
+            }
+
+            // User doesn't like, load like button
+            else {
+                likeBtn.classList.add("fas");
+                likeBtn.classList.remove("far");
+                likeCountVal--;
+                likeCount.innerHTML = likeCountVal;
+            };
+        };
+    });
+};

@@ -6,16 +6,14 @@
 
         <div class="like-count">{{ post.likes.count }}</div>
         <div class="like-icon">
-            {% if not post.likes.exists %}
-                <i class="fas fa-heart" onclick="likePost(this)"></i>
+            {% if user.likes.exists and post.likes.exists %}
+                {% if user.id in post.like_user_ids %}
+                    <i class="far fa-heart" onclick="likePost(this)"></i>
+                {% else %}
+                    <i class="fas fa-heart" onclick="likePost(this)"></i>
+                {% endif %}
             {% else %}
-                {% for like in post.likes.all %}
-                    {% if like.user.id == user.id %}
-                        <i class="far fa-heart" onclick="unlikePost(this)"></i>
-                    {% else %}
-                        <i class="fas fa-heart" onclick="likePost(this)"></i>
-                    {% endif %}
-                {% endfor %}
+                <i class="fas fa-heart" onclick="likePost(this)"></i>
             {% endif %}
         </div>
     </div>

@@ -163,23 +163,45 @@ def edit_post(request, post_id):
         try:
             post = Post.objects.get(pk=post_id)
             post_user = User.objects.get(pk=post_user_id)
-        except Post.DoesNotExist:
+        except (Post.DoesNotExist, User.DoesNotExist):
             return JsonResponse({
                 "error": "Invalid request"
             }, status=400)
 
-        # Ensure active user matches the post_user and the post.user
-        if request.user.id != post_user.id or request.user.id != post.user.id:
-            return JsonResponse({
-                "error": "Invalid request"
-            }, status=400)
-        
-        # Update the post content
-        else:
-            post.content = data["postContent"]
-            post.save(update_fields=['content'])
-            return JsonResponse({
-                "message": "Post updated"
+        # Edit post content
+        if data.get("postContent") is not None:
+
+            # Ensure active user matches the post_user and the post.user
+            if request.user.id != post_user.id or request.user.id != post.user.id:
+                return JsonResponse({
+                    "error": "Invalid request"
+                }, status=400)
+            
+            # Update the post content
+            else:
+                post.content = data["postContent"]
+                post.save(update_fields=['content'])
+                return JsonResponse({
+                    "message": "Post updated"
+                }, status=201)
+
+        # Like post
+        if data.get("like") is not None:
+
+            # User already likes post, change to unlike
+            try:
+                user_likes = Like.objects.get(post=post, user=request.user)
+                user_likes.delete()
+                like = False
+
+            # User does not like post, change to like
+            except Like.DoesNotExist:
+                create_like = Like(post=post, user=request.user)
+                create_like.save()
+                like = True
+
+            return JsonResponse ({
+                "like": like
             }, status=201)
 
     else:

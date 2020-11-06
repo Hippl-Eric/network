@@ -6,13 +6,13 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ("id", "username")
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ("user", "timestamp", "content")
+    list_display = ("id", "user", "timestamp", "content")
 
 class FollowersAdmin(admin.ModelAdmin):
     list_display = ("id", "follower", "following")
 
 class LikeAdmin(admin.ModelAdmin):
-    list_display = ("post", "user")
+    list_display = ("id", "post", "user")
 
 # Register your models here.
 admin.site.register(User, UserAdmin)

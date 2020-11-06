@@ -19,6 +19,11 @@ class Post(models.Model):
     content = models.TextField(blank=False)
     objects = PostManager()
 
+    @property
+    def like_user_ids(self):
+        like_ids = self.likes.values_list('id', flat=True)
+        return Like.objects.filter(id__in=like_ids).values_list('user_id', flat=True)
+
     def __str__(self):
         return f"{self.id}, ({self.user})"
 
