@@ -29,16 +29,8 @@ def index(request):
 
         # Paginate posts
         all_posts = Post.objects.all()
-        p = Paginator(all_posts, 10)
+        posts = paginate_posts(request=request, all_posts=all_posts, num=10)
 
-        # Check for page number, default 1
-        page = request.GET.get("page", 1)
-
-        # Return posts for page number, if error return page 1
-        try:
-            posts = p.page(page)
-        except InvalidPage:
-            posts = p.page(1)
         return render(request, "network/index.html", {
             "posts": posts
         })
@@ -111,7 +103,8 @@ def profile(request, username):
     if request.method == "GET":
 
         # Grab user's posts, qty of followers, qty following, & list of followers
-        posts = user.posts.all()
+        all_posts = user.posts.all()
+        posts = paginate_posts(request=request, all_posts=all_posts, num=10)
         num_followers = user.followers.count()
         num_following = user.following.count()
         is_following = user.followers.filter(follower_id=request.user.id).exists()
@@ -160,9 +153,10 @@ def following_posts(request):
 
     # Get all follower posts
     following_posts = Post.objects.filter(user__in=following_list)
+    posts = paginate_posts(request=request, all_posts=following_posts, num=10)
 
     return render(request, "network/following.html", {
-        "posts": following_posts
+        "posts": posts
     })
 
 @login_required(login_url='login')
@@ -221,3 +215,17 @@ def edit_post(request, post_id):
         return JsonResponse({
             "error": "PUT request required."
         }, status=400)
+
+def paginate_posts(request, all_posts, num):
+        
+    p = Paginator(all_posts, num)
+
+    # Check for page number, default 1
+    page = request.GET.get("page", 1)
+
+    # Return posts for page number, if error return page 1
+    try:
+        posts = p.page(page)
+    except InvalidPage:
+        posts = p.page(1)
+    return posts

@@ -5,9 +5,7 @@
 
     {% if posts %}
         <div>
-            {% for post in posts %}
-                {% include "network/post-block.html" %}
-            {% endfor %}
+            {% include "network/post-block.html" %}
         </div>
     {% else %}
         <p>You are not following anyone yet!</p>
