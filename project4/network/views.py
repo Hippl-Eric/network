@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, InvalidPage
 
 from .models import User, Post, Followers, Like
 
@@ -26,15 +26,21 @@ def index(request):
     
     # Return all posts page
     else:
+
+        # Paginate posts
         all_posts = Post.objects.all()
-
         p = Paginator(all_posts, 10)
-        
 
+        # Check for page number, default 1
+        page = request.GET.get("page", 1)
 
-
+        # Return posts for page number, if error return page 1
+        try:
+            posts = p.page(page)
+        except InvalidPage:
+            posts = p.page(1)
         return render(request, "network/index.html", {
-            "all_posts": all_posts
+            "posts": posts
         })
 
 

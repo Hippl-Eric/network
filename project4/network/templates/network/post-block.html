@@ -1,23 +1,65 @@
-<div class="post-box border border-dark rounded" data-post-id="{{ post.id }}" data-user-id="{{ post.user.id }}">
-    <div class="username"><strong><a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></strong></div>
-    <div class="content">{{ post.content }}</div>
-    <div class="timestamp">{{ post.timestamp }}</div>
-    <div class="like-box d-flex flex-row">
+{% for post in posts.object_list %}
+    <div class="post-box border border-dark rounded" data-post-id="{{ post.id }}" data-user-id="{{ post.user.id }}">
+        <div class="username"><strong><a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></strong></div>
+        <div class="content">{{ post.content }}</div>
+        <div class="timestamp">{{ post.timestamp }}</div>
+        <div class="like-box d-flex flex-row">
 
-        <div class="like-count">{{ post.likes.count }}</div>
-        <div class="like-icon">
-            {% if user.likes.exists and post.likes.exists %}
-                {% if user.id in post.like_user_ids %}
-                    <i class="far fa-heart" onclick="likePost(this)"></i>
+            <div class="like-count">{{ post.likes.count }}</div>
+            <div class="like-icon">
+                {% if user.likes.exists and post.likes.exists %}
+                    {% if user.id in post.like_user_ids %}
+                        <i class="far fa-heart" onclick="likePost(this)"></i>
+                    {% else %}
+                        <i class="fas fa-heart" onclick="likePost(this)"></i>
+                    {% endif %}
                 {% else %}
                     <i class="fas fa-heart" onclick="likePost(this)"></i>
                 {% endif %}
-            {% else %}
-                <i class="fas fa-heart" onclick="likePost(this)"></i>
-            {% endif %}
+            </div>
         </div>
+        {% if user.username == post.user.username %}
+            <button type="button" class="edit-btn btn btn btn-link btn-sm" onclick="editPost(this)">Edit</button>
+        {% endif %}
     </div>
-    {% if user.username == post.user.username %}
-        <button type="button" class="edit-btn btn btn btn-link btn-sm" onclick="editPost(this)">Edit</button>
-    {% endif %}
-</div>
+{% endfor %}
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        {% if posts.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ posts.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% for page in posts.paginator.page_range %}
+            {% if posts.number == page %}
+                <li class="page-item active"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+            {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if posts.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ posts.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>

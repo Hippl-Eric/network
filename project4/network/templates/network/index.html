@@ -16,8 +16,6 @@
     {% endif %}
     <h1>Posts</h1>
     <div>
-        {% for post in all_posts %}
-            {% include "network/post-block.html" %}
-        {% endfor %}
+        {% include "network/post-block.html" %}
     </div>
 {% endblock %}

@@ -13,18 +13,12 @@ class PostManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().order_by(F('timestamp').desc())
 
-class PostPaginator(models.Manager):
-    def get_queryset(self):
-        posts = super().get_queryset().order_by(F('timestamp').desc())
-        return Paginator(posts, 10)
-
 class Post(models.Model):
     
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="posts")
     timestamp = models.DateTimeField(auto_now_add=True)
     content = models.TextField(blank=False)
     objects = PostManager()
-    paginate = PostPaginator()
 
     @property
     def like_user_ids(self):
