@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import F
+from django.core.paginator import Paginator
 
 
 class User(AbstractUser):
@@ -10,7 +11,12 @@ class User(AbstractUser):
 
 class PostManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().order_by(F('timestamp').desc())    
+        return super().get_queryset().order_by(F('timestamp').desc())
+
+class PostPaginator(models.Manager):
+    def get_queryset(self):
+        posts = super().get_queryset().order_by(F('timestamp').desc())
+        return Paginator(posts, 10)
 
 class Post(models.Model):
     
@@ -18,6 +24,7 @@ class Post(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     content = models.TextField(blank=False)
     objects = PostManager()
+    paginate = PostPaginator()
 
     @property
     def like_user_ids(self):
