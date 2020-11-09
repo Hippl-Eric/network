@@ -10,7 +10,7 @@
         <div id="profile-info">
             <div>Followers: <span id="num-followers">{{ num_followers }}</span></div>
             <div>Following: {{ num_following }}</div>
-            {% if user.username != user_profile.username %}
+            {% if user.username != user_profile.username and user.is_authenticated %}
             <form id="follow-form" method="POST">
                 {% csrf_token %}
                 {% if is_following %}

@@ -17,10 +17,12 @@ def index(request):
 
         # Grab form submission
         content = request.POST.get("content")
-        # TODO prevent empty posts
-
-        post = Post(user=request.user, content=content)
-        post.save()
+        content = content.strip()
+        
+        # Save post if content provided
+        if content:
+            post = Post(user=request.user, content=content)
+            post.save()
 
         return HttpResponseRedirect(reverse("index"))
     
@@ -119,7 +121,6 @@ def profile(request, username):
         })
         
     # Toggle following
-    # TODO login required
     elif request.method == "PUT":
 
         # User is already following, change to un-following
