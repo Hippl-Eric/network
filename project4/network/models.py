@@ -3,7 +3,6 @@ from django.db import models
 from django.db.models import F
 from django.core.paginator import Paginator
 
-
 class User(AbstractUser):
 
     def __str__(self):
@@ -28,10 +27,14 @@ class Post(models.Model):
     def __str__(self):
         return f"{self.id}, ({self.user})"
 
-# TODO: https://docs.djangoproject.com/en/3.1/ref/models/constraints/#uniqueconstraint
 class Followers(models.Model):
     follower = models.ForeignKey("User", on_delete=models.CASCADE, related_name="following")
     following = models.ForeignKey("User", on_delete=models.CASCADE, related_name="followers")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['follower', 'following'], name='unique_follower')
+        ]
 
     def __str__(self):
         return f"{self.id}, ({self.follower}), ({self.following})"
@@ -39,6 +42,11 @@ class Followers(models.Model):
 class Like(models.Model):
     post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="likes")
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="likes")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['post', 'user'], name='unique_like')
+        ]
 
     def __str__(self):
         return f"user: {self.user}, post: {self.post}"

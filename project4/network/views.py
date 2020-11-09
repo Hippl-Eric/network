@@ -107,16 +107,12 @@ def profile(request, username):
         # Grab user's posts, qty of followers, qty following, & list of followers
         all_posts = user.posts.all()
         posts = paginate_posts(request=request, all_posts=all_posts, num=10)
-        num_followers = user.followers.count()
-        num_following = user.following.count()
         is_following = user.followers.filter(follower_id=request.user.id).exists()
 
         # Return
         return render(request, "network/profile.html", {
             "user_profile": user,
             "posts": posts,
-            "num_followers": num_followers,
-            "num_following": num_following,
             "is_following": is_following
         })
         

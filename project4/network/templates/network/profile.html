@@ -8,8 +8,8 @@
     {% else %}
         <h1>{{ user_profile.username }}</h1>
         <div id="profile-info">
-            <div>Followers: <span id="num-followers">{{ num_followers }}</span></div>
-            <div>Following: {{ num_following }}</div>
+            <div>Followers: <span id="num-followers">{{ user_profile.followers.count }}</span></div>
+            <div>Following: {{ user_profile.following.count }}</div>
             {% if user.username != user_profile.username and user.is_authenticated %}
             <form id="follow-form" method="POST">
                 {% csrf_token %}

@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
 
-    console.log("Loaded!")
-
     // Follow button
     if (document.querySelector("#follow-form")) {
         document.querySelector("#follow-form").onsubmit = function() {
@@ -26,15 +24,15 @@ function follow() {
     // Set request object
     const request = new Request(
         `/profile/${profile_username_path}`,
-        {method: 'PUT',
-        headers: {'X-CSRFToken': csrftoken}}
+        {
+            method: 'PUT',
+            headers: {'X-CSRFToken': csrftoken},
+            mode: 'same-origin'
+        }
     );
 
     // Toggle active user following profile username
-    fetch(request, {
-        method: "PUT",
-        mode: 'same-origin'
-    })
+    fetch(request)
     .then(response => response.json())
     .then(data => {
         if (data.error) {
