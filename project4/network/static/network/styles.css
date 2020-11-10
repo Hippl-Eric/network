@@ -31,6 +31,10 @@
     cursor: pointer;
 }
 
+.fa-heart.no-pointer {
+    cursor: auto;
+}
+
 #profile-info {
     margin-bottom: 1em;
 }

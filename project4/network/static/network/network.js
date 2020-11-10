@@ -171,7 +171,6 @@ function createPostContent(elmntType, text) {
 }
 
 function likePost(likeBtn) {
-    console.log("clicked");
 
     // Grab the post and like count
     const postElmnt = likeBtn.closest(".post-box");
